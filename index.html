@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="./src/output.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador x86</title>
+  </head>
+  
+  <body class="bg-gray-950 text-gray-200 font-mono min-h-screen flex justify-center items-center">
+    
+    <main class="w-full max-w-7xl p-3 bg-gray-900 rounded-xl shadow-2xl border border-gray-800">
+      
+      <h1 class="text-2xl font-bold text-center mb-2 text-indigo-400">SIMULADOR X86</h1>
+      <p class="text-center text-sm mb-3 text-gray-400">Ambiente de desenvolvimento e depuração Assembly</p>
+      
+      <div class="grid lg:grid-cols-3 gap-3">
+        
+        <section class="lg:col-span-2 flex flex-col gap-3">
+            
+            <div class="p-2 bg-gray-900 rounded-lg border border-gray-800">
+              <h2 class="text-lg font-semibold mb-1 text-white">Editor (Assembly)</h2>
+              <textarea 
+                  id="editor" 
+                  class="w-full h-64 p-3 bg-gray-950 rounded-lg text-sm border border-gray-800 
+                         focus:border-indigo-500 outline-none resize-none">
+              </textarea>
+            </div>
+            
+            <div class="flex gap-2">
+              <button id="loadBtn" class="px-4 py-2 font-semibold text-sm rounded-lg text-white 
+                                          bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 
+                                          transition-all duration-300 shadow-md shadow-blue-900/50">Carregar</button>
+              <button id="runBtn" class="px-4 py-2 font-semibold text-sm rounded-lg text-white 
+                                         bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 
+                                         transition-all duration-300 shadow-md shadow-green-900/50">Executar</button>
+              <button id="stepBtn" class="px-4 py-2 font-semibold text-sm rounded-lg text-gray-900 
+                                          bg-yellow-500 hover:bg-yellow-400 transition-all duration-300 shadow-md shadow-yellow-800/50">Step</button>
+              <button id="resetBtn" class="px-4 py-2 font-semibold text-sm rounded-lg text-white 
+                                           bg-red-600 hover:bg-red-500 transition-all duration-300 shadow-md shadow-red-900/50">Reset</button>
+              <button id="dumpBtn" class="px-4 py-2 font-semibold text-sm rounded-lg text-white 
+                                          bg-purple-600 hover:bg-purple-500 transition-all duration-300 shadow-md shadow-purple-900/50">Dump</button>
+            </div>
+
+            <div class="p-2 bg-gray-900 rounded-xl border border-gray-800">
+              <h2 class="text-lg font-semibold mb-1 text-yellow-400">Saída (Console)</h2>
+              <div id="console" 
+                   class="w-full h-28 p-3 bg-gray-950 rounded-lg overflow-auto text-sm text-green-400 border border-gray-800">
+                   > Console pronto.
+              </div>
+            </div>
+        </section>
+        
+        <aside class="flex flex-col gap-3">
+          
+          <div id="registers-panel" class="p-2 bg-gray-900 rounded-xl border border-gray-800 flex-1">
+            <h2 class="text-lg font-semibold mb-3 text-red-400">Registradores</h2>
+            <div id="registers" class="text-sm"></div>
+          </div>
+
+          <div id="memory-panel" class="p-2 bg-gray-900 rounded-xl border border-gray-800 flex-1">
+            <h2 class="text-lg font-semibold mb-3 text-cyan-400">Memória / Stack</h2>
+            <div id="memory" class="overflow-auto text-xs"></div> 
+          </div>
+        </aside>
+      </div>
+    </main>
+    
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
