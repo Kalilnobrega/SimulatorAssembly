@@ -88,6 +88,16 @@ class CPU:
         print("----------------------")
 
 
+    def reset(self):
+        for r in self._registers:
+            self._registers[r] = 0
+        self._flags = {
+            "zf": 0,
+            "cf": 0,
+            "sf": 0,
+            "of": 0
+        }
+
 class Simulator:
     """O Simulador principal com todas as instruções do A3."""
     
@@ -463,4 +473,14 @@ class Simulator:
         self.cpu._registers['ip'] += 1
         return f"{opcode} " + ", ".join(operands)
 
+    def reset(self):
+
+        self.cpu.reset()
+        self.cpu.set_reg("ip", 0)
+
+        self.halted = False
+        self.labels = {}           
+        self.program = []        
+
+        return "RESET_OK"
 
