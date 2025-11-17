@@ -53,3 +53,12 @@ def step():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/reset", methods=["POST"])
+def reset_program():
+
+    global vm
+    vm = Simulator()  
+
+    return jsonify({"status": "reset done"})
