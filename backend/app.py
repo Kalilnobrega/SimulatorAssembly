@@ -62,3 +62,21 @@ def reset_program():
     vm = Simulator()  
 
     return jsonify({"status": "reset done"})
+
+
+@app.route("/dump", methods=["GET"])
+def dump_program():
+
+    try:
+        return jsonify({
+            "registers": vm.cpu.dump(),
+            "ip": vm.cpu.get_reg("ip"),
+            "program_size": len(vm.program)
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
