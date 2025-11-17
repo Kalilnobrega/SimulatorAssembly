@@ -23,3 +23,17 @@ def load_program():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route("/run", methods=["POST"])
+def run_program():
+
+    try:
+        vm.run()
+        return jsonify({
+            "status": "program executed",
+            "registers": vm.cpu.dump()
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
