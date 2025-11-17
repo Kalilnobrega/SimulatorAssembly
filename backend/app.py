@@ -37,3 +37,19 @@ def run_program():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route("/step", methods=["POST"])
+def step():
+   
+    try:
+        vm.step()
+
+        return jsonify({
+            "status": "step executed",
+            "registers": vm.cpu.dump(),
+            "ip": vm.cpu.get_reg("ip")
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
