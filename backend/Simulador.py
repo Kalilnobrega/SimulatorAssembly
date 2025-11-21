@@ -97,6 +97,7 @@ class CPU:
             "registers": register_state,
             "flags": self.flags
         }
+    
     def dump_print(self):
         """Exibe o estado atual dos registradores 16-bit"""
         print("--- CPU (16-bit) ---")
@@ -105,7 +106,6 @@ class CPU:
         regs3 = f"IP: {self.get_reg('ip'):<5} FLAGS [ZF:{self.flags['ZF']} SF:{self.flags['SF']} OF:{self.flags['OF']} CF:{self.flags['CF']}]"
         print(regs1); print(regs2); print(regs3)
         print("----------------------")
-
 
     def reset(self):
         for r in self._registers:
@@ -125,7 +125,8 @@ class Simulator:
         self.memory = bytearray(memory_size) # Memória byte-addressable
         self.program = []
         self.labels = {}  # Dicionário para guardar rótulos (Labels)
-        
+        self.output_log = ""
+
         # Pilha começa no topo da memória
         self.cpu.set_reg('sp', 0xFFFE)
         self.cpu.set_reg('bp', 0xFFFE)
@@ -203,6 +204,9 @@ class Simulator:
             try: self.cpu.set_reg(operand, value)
             except ValueError: raise ValueError(f"Destino '{operand}' inválido")
 
+    def log_print(self, message):
+        self.output_log += str(message) + "\n"
+
     def load_program_from_text(self, assembly_code_text):
         """
         Carrega o programa. Faz uma "pré-compilação" em duas passagens
@@ -256,7 +260,8 @@ class Simulator:
                 # Crucial para JMP/CALL poderem sobrescrevê-lo.
                 self.cpu.set_reg('ip', current_ip + 1)
                 
-                print(f"\n[IP={current_ip}] Executando: {opcode} {', '.join(operands)}")
+                
+                self.log_print(f"\n[IP={current_ip}] Executando: {opcode} {', '.join(operands)}")
                 self.execute_instruction(opcode, operands)
                 
                 self.cpu.dump()
@@ -488,9 +493,15 @@ class Simulator:
             return "END"
 
         opcode, operands = self.program[ip]
-        self.execute_instruction(opcode, operands)
-        self.cpu._registers['ip'] += 1
-        return f"{opcode} " + ", ".join(operands)
+        self.cpu.set_reg('ip', ip + 1)
+        
+        try:
+            self.execute_instruction(opcode, operands)
+            self.log_print(f"\n[IP={ip}] Executando: {opcode} {', '.join(operands)}")
+        except Exception as e:
+            return "Erro ao executar: {e}"
+
+        return "OK"
 
     def reset(self):
 
