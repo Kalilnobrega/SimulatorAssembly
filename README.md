@@ -1,4 +1,4 @@
-# Projeto — Simulador Assembly (x86 Modo Real)
+# 🖥️ Projeto — Simulador Assembly (x86 Modo Real)
 
 Simulador interativo desenvolvido para auxiliar estudantes a entender, visualizar e executar instruções Assembly (arquitetura x86 em modo real). O projeto permite acompanhar registradores, memória e fluxo de execução de forma didática e clara.
 
