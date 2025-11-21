@@ -19,7 +19,7 @@ def load_program():
 
         vm.load_program_from_text(code)
 
-        return jsonify({"status": "program loaded", "instructions": len(vm.program)})
+        return jsonify({"output": "programa carregado"})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -27,16 +27,17 @@ def load_program():
 
 @app.route("/run", methods=["POST"])
 def run_program():
-
+    
     try:
         vm.run()
         return jsonify({
-            "status": "program executed",
-            "registers": vm.cpu.dump()
+            "instructions": vm.output_log,
+            "registers": vm.cpu.dump(),
+            "output": "programa executado"        
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"erro na instrução:{vm.output_log}"+str(e)}), 500
     
 
 @app.route("/step", methods=["POST"])
@@ -46,13 +47,13 @@ def step():
         vm.step()
 
         return jsonify({
-            "status": "step executed",
+            "instruction": vm.output_log,
             "registers": vm.cpu.dump(),
-            "ip": vm.cpu.get_reg("ip")
+            "output": "step executado",
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"erro na instrução:{vm.output_log}"+str(e)}), 500
 
 
 @app.route("/reset", methods=["POST"])
@@ -61,7 +62,10 @@ def reset_program():
     global vm
     vm = Simulator()  
 
-    return jsonify({"status": "reset done"})
+    return jsonify({
+        "registers": vm.cpu.dump(),
+        "output": "reset",
+        })
 
 
 @app.route("/dump", methods=["GET"])
@@ -70,8 +74,7 @@ def dump_program():
     try:
         return jsonify({
             "registers": vm.cpu.dump(),
-            "ip": vm.cpu.get_reg("ip"),
-            "program_size": len(vm.program)
+            "output": "dump realizado",
         })
 
     except Exception as e:
