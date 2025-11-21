@@ -11,7 +11,7 @@ Simulador interativo desenvolvido para auxiliar estudantes a entender, visualiza
 * **Kalil Nóbrega** — [GitHub](link-do-github-do-kalil) • [LinkedIn](link-do-linkedin-do-kalil)
 
 ---
-🔧 Funcionalidades do Simulador
+## 🔧 Funcionalidades do Simulador
 Execução passo a passo de instruções Assembly
 
 Visualização de registradores
