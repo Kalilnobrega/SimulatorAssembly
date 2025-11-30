@@ -9,6 +9,7 @@ Simulador interativo desenvolvido para auxiliar estudantes a entender, visualiza
 * **Vitor Vitoriano** — [GitHub](https://github.com/Vitor-Vitoriano) • [LinkedIn](link-do-linkedin-do-vitor)
 * **Paulo Adrian** — [GitHub](link-do-github-do-paulo) • [LinkedIn](link-do-linkedin-do-paulo)
 * **Kalil Nóbrega** — [GitHub](link-do-github-do-kalil) • [LinkedIn](link-do-linkedin-do-kalil)
+* **Kauan Oliveira** -   
 
 ---
 ## 🔧 Funcionalidades do Simulador
