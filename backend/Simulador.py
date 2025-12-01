@@ -181,6 +181,14 @@ class Simulator:
         self.cpu.set_reg('sp', 0xFFFE)
         self.cpu.set_reg('bp', 0xFFFE)
 
+        self.valid_opcodes = {
+            'MOV', 'ADD', 'SUB', 'INC', 'DEC', 'MUL', 'DIV', 'NEG',
+            'AND', 'OR', 'XOR', 'NOT', 'CMP',
+            'JMP', 'JE', 'JNE', 'JG', 'JGE', 'JL', 'JLE',
+            'PUSH', 'POP', 'CALL', 'RET', 'IRET', 'LOOP',
+            'IN', 'OUT', 'XCHG',
+        }
+
     def _is_reg_8bit(self, reg_name):
         """Checa se um nome de registrador é 8-bit"""
         return reg_name.lower() in ('al', 'ah', 'bl', 'bh', 'cl', 'ch', 'dl', 'dh')
@@ -455,18 +463,21 @@ class Simulator:
 
         # Passagem 1: Mapear Labels (calculando offsets)
         temp_offset = 0
-        for line in lines:
+        for line_num, line in enumerate(lines, 1):
             if line.endswith(':'):
                 self.labels[line[:-1].strip().lower()] = temp_offset
             else:
                 parts = line.split(maxsplit=1)
+                opcode = parts[0].upper()
+                if opcode not in self.valid_opcodes:
+                    raise ValueError(f"Linha {line_num}: Comando desconhecido '{opcode}'")
+                
                 ops = []
                 if len(parts) > 1:
                     ops = [x.strip() for x in parts[1].split(',')]
-                    # substitui constantes em operandos
                     ops = [str(self.constants.get(o.lower(), o)) for o in ops]
-                size = self._get_instruction_size(ops)
-                temp_offset += size
+                temp_offset += self._get_instruction_size(ops)
+
 
         # Passagem 2: Carregar Mapa (IP -> instrução)
         current_offset = 0
