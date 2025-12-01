@@ -1,0 +1,42 @@
+{
+    "builds": [
+      {
+        "src": "backend/app.py",
+        "use": "@vercel/python"
+      },
+      {
+        "src": "index.html",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "src/**",
+        "use": "@vercel/static"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/load",
+        "dest": "backend/app.py"
+      },
+      {
+        "src": "/run",
+        "dest": "backend/app.py"
+      },
+      {
+        "src": "/step",
+        "dest": "backend/app.py"
+      },
+      {
+        "src": "/reset",
+        "dest": "backend/app.py"
+      },
+      {
+        "src": "/dump",
+        "dest": "backend/app.py"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ]
+  }
