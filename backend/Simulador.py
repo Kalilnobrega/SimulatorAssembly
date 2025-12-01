@@ -265,6 +265,14 @@ class Simulator:
         val_high = (value >> 8) & 0xFF
         self.memory[address % memlen] = val_low
         self.memory[(address + 1) % memlen] = val_high
+    
+    def _jump_target(self, operand):
+        op = operand.lower().strip()
+        # 1. É um label?
+        if op in self.labels:
+            return self.labels[op]
+        # 2. Não é label? Tenta pegar valor (Imediato, Registrador, Memória)
+        return self._get_operand_value(op)
 
 
     # --- Novo parser de operandos de memória: suporta [reg], [imm], [reg+disp], [reg+reg+disp] ---
@@ -663,11 +671,20 @@ class Simulator:
             self.cpu.set_flags_full(val1, val2, result, op='sub', bits=bits)
 
         elif opcode == 'JMP':
-            dest_label = operands[0].lower()
-            if dest_label not in self.labels:
-                raise ValueError(f"Rótulo de pulo '{dest_label}' não encontrado")
-            self.cpu.set_reg('ip', self.labels[dest_label])
-            self.log_print(f"JMP para {dest_label} (IP={self.labels[dest_label]})")
+            target = operands[0]
+ 
+            if target.lower() in self.labels:
+                addr = self.labels[target.lower()]
+            else:
+                
+                try:
+                    addr = self._get_operand_value(target)
+                except ValueError:
+                    self.log_print(f"Erro: Rótulo '{target}' não encontrado.\n")
+                    return
+
+            self.cpu.set_reg('ip', addr)
+            self.log_print(f"JMP para {target} -> IP={addr:04X}")
 
         # Jumps Condicionais
         elif opcode in ('JE', 'JNE', 'JG', 'JGE', 'JL', 'JLE'):
@@ -685,26 +702,24 @@ class Simulator:
             elif opcode == 'JLE': condition_met = (ZF == 1 or SF != OF)
 
             if condition_met:
-                dest_label = operands[0].lower()
-                target_ip = self.labels[dest_label]
-                self.cpu.set_reg('ip', target_ip)
-                self.log_print(f"{opcode}: Condição satisfeita. Pulando para {dest_label} (IP={target_ip})")
+                addr = self._jump_target(operands[0])
+                self.cpu.set_reg('ip', addr)
+                self.log_print(f"{opcode}: Pulando para {operands[0]} -> IP={addr:04X}")
             else:
                 self.log_print(f"{opcode}: Condição não satisfeita. Não pulando.")
 
         # --- Procedimentos e Loops ---
         elif opcode == 'CALL':
-            dest_label = operands[0].lower()
             ip = self.cpu.get_reg('ip')
             sp = (self.cpu.get_reg('sp') - 2) & 0xFFFF
             self.cpu.set_reg('sp', sp)
             # PUSH IP na pilha (SS)
             self._write_memory(sp, ip, 16, segment='ss')
-            self.log_print(f"CALL: Salvando IP={ip} na pilha [{sp}]")
+            self.log_print(f"CALL: Salvando IP={ip:04X} na pilha [{sp:04X}] | ")
             # JMP para o label
-            target_ip = self.labels[dest_label]
-            self.cpu.set_reg('ip', target_ip)
-            self.log_print(f"CALL: Pulando para {dest_label} (IP={target_ip})")
+            addr = self._jump_target(operands[0])
+            self.cpu.set_reg('ip', addr)
+            self.log_print(f"CALL: Salvou IP={ip:04X}, pulando para {operands[0]} -> IP={addr:04X}")
 
         elif opcode == 'RET':
             sp = self.cpu.get_reg('sp')
@@ -721,13 +736,12 @@ class Simulator:
             self.log_print("Aviso: IRET simulado como RET.")
 
         elif opcode == 'LOOP':
-            dest_label = operands[0].lower()
             cx = (self.cpu.get_reg('cx') - 1) & 0xFFFF
             self.cpu.set_reg('cx', cx)
-            if cx != 0:
-                target_ip = self.labels[dest_label]
-                self.cpu.set_reg('ip', target_ip)
-                self.log_print(f"LOOP: CX={cx}, pulando para {dest_label} (IP={target_ip})")
+            if cx != 0: 
+                addr = self._jump_target(operands[0])
+                self.cpu.set_reg('ip', addr)
+                self.log_print(f"LOOP: CX={cx}, pulando para {operands[0]} -> IP={addr:04X}")
             else:
                 self.log_print(f"LOOP: CX={cx}, não pulando.")
 
@@ -762,7 +776,7 @@ class Simulator:
         self.cpu.set_reg('ip', (ip + size) & 0xFFFF)
 
         try:
-            self.log_print(f"[ADDR: {address:05X} | CS:IP {cs:04X}:{ip:04X}] Executando: {opcode} {', '.join(operands)}")
+            self.log_print(f"[ADDR: {address:05X} | CS:IP {cs:04X}:{ip:04X}] Executando: {opcode} {', '.join(operands)} | ")
             self.execute_instruction(opcode, operands)
         except Exception as e:
             return f"Erro ao executar: {e}"
