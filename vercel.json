@@ -2,14 +2,14 @@
     "buildCommand": "npm install && npm run build",
     "outputDirectory": "dist",
     "functions": {
-      "api/app.py": {
-        "runtime": "python3.12"
+      "backend/app.py": {
+        "runtime": "vercel-python@3.9"
       }
     },
     "routes": [
       {
         "src": "/(load|run|step|reset|dump)",
-        "dest": "/api/app.py"
+        "dest": "/backend/app.py"
       },
       {
         "src": "/(.*)",
